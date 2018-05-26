@@ -1,0 +1,31 @@
+# direct_product
+
+Implements cartesian product (direct product) to reduce for-loops in programs
+```cxx
+enum Modes { DC, PLANAR, HORIZONTAL, VERTICAL, ANGLE45, MODES_SIZE };
+enum Components { Y, Cb, Cr, COMPONENTS_SIZE };
+
+// simple approach
+for (int boolean = 0; boolean < 2; ++boolean) {
+  for (int mode = DC; mode < MODES_SIZE; ++mode) {
+    for (int comp = Y; comp < COMPONENTS_SIZE; ++comp) {
+      auto choice = std::make_tuple(Components(comp), bool(boolean), Modes(mode));
+      // process choice
+    }
+  }
+}
+
+// using cartesian product
+auto modes = boost::counting_range(int(DC), int(MODES_SIZE)) | boost::adaptors::transformed(+[](int x)
+{
+    return static_cast<Modes>(x);
+});
+std::list<bool> boolean{{false, true}};
+std::array<Components, COMPONENTS_SIZE> comp{{Y, Cb, Cr}};
+
+auto enumeration = direct_product::make_range(comp, boolean, modes);
+// iterate through all possible combinations
+for (const auto& choice : enumeration) {
+  // process choice
+}
+```
