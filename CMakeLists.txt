@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
-project(direct_product VERSION 0.1.1 LANGUAGES CXX DESCRIPTION "Implementation of direct product iterator and range")
+project(direct_product VERSION 0.2.1 LANGUAGES CXX DESCRIPTION "Implementation of direct product iterator and range")
 
 include(CTest)
 include(GNUInstallDirs)
@@ -14,7 +14,7 @@ target_include_directories(direct_product INTERFACE $<BUILD_INTERFACE:${CMAKE_SO
 target_link_libraries(direct_product INTERFACE Boost::boost)
 
 if(BUILD_TESTING)
-    add_subdirectory(test)
+    add_subdirectory(tests)
 endif()
 
 install(TARGETS direct_product EXPORT ${PROJECT_NAME}-targets)
@@ -28,6 +28,7 @@ configure_file(config.cmake.in ${PROJECT_NAME}-config.cmake COPYONLY)
 install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-config.cmake DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/${PROJECT_NAME}-${PROJECT_VERSION})
 
 list(APPEND CPACK_GENERATOR TGZ)
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
 set(CPACK_SYSTEM_NAME ${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR})
 set(CPACK_PACKAGE_CONTACT "igsha")
 include(CPack)

@@ -5,3 +5,5 @@ target_include_directories(direct_product_test PRIVATE ${CATCH_DIR} ${CMAKE_CURR
 target_link_libraries(direct_product_test direct_product)
 
 add_test(NAME direct_product_test COMMAND direct_product_test)
+
+install(CODE "execute_process(COMMAND ${CMAKE_MAKE_PROGRAM} test)")

@@ -11,7 +11,9 @@ class range
 public:
     using iterator_type = iterator<decltype(std::declval<Ranges>().begin())...>;
 
-    range(Ranges&... ranges): first_iterator_({ranges.begin(), ranges.end()}...)
+    range(Ranges&&... ranges):
+        ranges_(std::forward<Ranges>(ranges)...),
+        first_iterator_(std::apply(make_iterator_from_range<Ranges...>, ranges_))
     {}
 
     iterator_type begin() const
@@ -25,13 +27,14 @@ public:
     }
 
 private:
+    std::tuple<Ranges...> ranges_;
     iterator_type first_iterator_;
 };
 
 template<class... Ranges>
-range<Ranges...> make_range(Ranges&... ranges)
+range<Ranges...> make_range(Ranges&&... ranges)
 {
-    return range<Ranges...>(ranges...);
+    return range<Ranges...>(std::forward<Ranges>(ranges)...);
 }
 
 } // namespace direct_product

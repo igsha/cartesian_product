@@ -51,9 +51,9 @@ TEST_CASE("different types")
                 {
                     REQUIRE(it != last);
                     const auto& [tcompid, tboolean, tmode] = *it;
-                    REQUIRE(tcompid == compid);
-                    REQUIRE(tboolean == boolean);
-                    REQUIRE(tmode == mode);
+                    CHECK(tcompid == compid);
+                    CHECK(tboolean == boolean);
+                    CHECK(tmode == mode);
                 }
             }
         }
@@ -106,8 +106,8 @@ TEST_CASE("with iterators")
     for (int i0 = 0, i1 = 7; it != last; ++it)
     {
         auto [r0, r1] = *it;
-        REQUIRE(r0 == i0);
-        REQUIRE(r1 == i1);
+        CHECK(r0 == i0);
+        CHECK(r1 == i1);
 
         if (++i0 >= 10)
         {
@@ -129,4 +129,16 @@ TEST_CASE("const iterator")
     });
 
     REQUIRE(std::equal(it.begin(), it.end(), ref));
+}
+
+TEST_CASE("move ranges")
+{
+    auto rng = direct_product::make_range(boost::irange(0, 11), std::vector<double>({7, 55.2, 3.17, -8.5}));
+    auto it = rng.begin();
+
+    for (int i = 0; i < 11; ++i) //!< \todo std::advance(it2, std::make_tuple(0, 1))
+        ++it;
+
+    REQUIRE(it != rng.end());
+    CHECK(*it == std::make_tuple(0, 55.2));
 }
