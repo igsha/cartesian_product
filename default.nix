@@ -6,7 +6,7 @@ let
 
 in pkgs.stdenv.mkDerivation rec {
   name = "${pname}-${version}";
-  pname = "direct_product";
+  pname = "dirprod";
   inherit version;
 
   src = ./.;

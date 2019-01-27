@@ -8,7 +8,7 @@
 #include <boost/iterator/transform_iterator.hpp>
 #include <boost/range/irange.hpp>
 
-#include <direct_product/range.hpp>
+#include <dirprod/range.hpp>
 
 TEST_CASE("iterator types")
 {
@@ -16,7 +16,7 @@ TEST_CASE("iterator types")
     std::deque<char> i1{{'a', 'b', 'c'}};
     auto i2 = boost::irange(7, 50);
 
-    auto r = direct_product::make_range(i0, i1, i2);
+    auto r = dirprod::make_range(i0, i1, i2);
     using iterator_t = decltype(r.begin());
 
     static_assert(std::is_same_v<typename std::iterator_traits<iterator_t>::value_type, std::tuple<int, char, int>>);
@@ -34,7 +34,7 @@ TEST_CASE("different types")
     std::deque<bool> booleans{false, true};
     std::array<Modes, MODES_SIZE> modes{{DC, PLANAR, HORIZONTAL, VERTICAL, ANGLE45}};
 
-    auto range = direct_product::make_range(components, booleans, modes);
+    auto range = dirprod::make_range(components, booleans, modes);
 
     SECTION("iterators")
     {
@@ -76,7 +76,7 @@ TEST_CASE("ranges")
     auto range1 = boost::irange(0, 1);
     auto range2 = boost::irange(0, 3);
 
-    auto range = direct_product::make_range(range0, range1, range2);
+    auto range = dirprod::make_range(range0, range1, range2);
     auto it = range.begin();
     auto last = range.end();
 
@@ -97,7 +97,7 @@ TEST_CASE("with iterators")
     auto range0 = boost::irange(0, 10);
     auto range1 = boost::irange(7, 19);
 
-    auto range = direct_product::make_range(range0, range1);
+    auto range = dirprod::make_range(range0, range1);
     auto it = range.begin();
     auto last = range.end();
 
@@ -119,7 +119,7 @@ TEST_CASE("const iterator")
 {
     const std::vector<int> x{{7, 15, 24, 33, 17}};
 
-    auto it = direct_product::make_range(x);
+    auto it = dirprod::make_range(x);
 
     auto ref = boost::make_transform_iterator(x.begin(), [](const auto x)
     {
@@ -131,7 +131,7 @@ TEST_CASE("const iterator")
 
 TEST_CASE("move ranges")
 {
-    auto rng = direct_product::make_range(boost::irange(0, 11), std::vector<double>({7, 55.2, 3.17, -8.5}));
+    auto rng = dirprod::make_range(boost::irange(0, 11), std::vector<double>({7, 55.2, 3.17, -8.5}));
     auto it = rng.begin();
 
     for (int i = 0; i < 11; ++i) //!< \todo std::advance(it2, std::make_tuple(0, 1))

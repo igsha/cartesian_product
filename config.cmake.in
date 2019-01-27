@@ -1,7 +1,8 @@
+cmake_minimum_required(VERSION @CMAKE_MINIMUM_REQUIRED_VERSION@)
 find_package(Boost REQUIRED)
 
-include(${CMAKE_CURRENT_LIST_DIR}/direct_product-targets.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-targets.cmake)
 
-get_target_property(direct_product_INCLUDE_DIRS direct_product INTERFACE_INCLUDE_DIRECTORIES)
-get_target_property(direct_product_LIBRARIES direct_product INTERFACE_LINK_LIBRARIES)
-list(APPEND direct_product_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
+get_target_property(@PROJECT_NAME@_INCLUDE_DIRS @PROJECT_NAME@ INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(@PROJECT_NAME@_LIBRARIES @PROJECT_NAME@ INTERFACE_LINK_LIBRARIES)
+list(APPEND @PROJECT_NAME@_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})

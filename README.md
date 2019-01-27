@@ -1,4 +1,4 @@
-# direct_product
+# dirprod
 
 Implements cartesian product (direct product) to reduce for-loops in programs
 ```cxx
@@ -25,7 +25,7 @@ auto modes = boost::counting_range(int(DC), int(MODES_SIZE)) | boost::adaptors::
 });
 std::list<bool> boolean{{false, true}};
 
-auto enumeration = direct_product::make_range(std::vector<Components>{{Y, Cb, Cr}}, boolean, modes);
+auto enumeration = dirprod::make_range(std::vector<Components>{{Y, Cb, Cr}}, boolean, modes);
 // iterate through all possible combinations
 for (const auto& choice : enumeration)
 {

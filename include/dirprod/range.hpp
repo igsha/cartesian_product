@@ -1,18 +1,18 @@
-#ifndef __DIRECT_PRODUCT_RANGE_HPP__
-#define __DIRECT_PRODUCT_RANGE_HPP__
+#ifndef __DIRPROD_RANGE_HPP__
+#define __DIRPROD_RANGE_HPP__
 
 #include <boost/range/iterator_range.hpp>
 
 #include "iterator.hpp"
 
-namespace direct_product {
+namespace dirprod {
 
 template<class... Ranges>
 class range
 {
 public:
-    using iterator = direct_product::iterator<decltype(std::declval<Ranges>().begin())...>;
-    using const_iterator = direct_product::iterator<decltype(std::declval<Ranges>().begin())...>;
+    using iterator = dirprod::iterator<decltype(std::declval<Ranges>().begin())...>;
+    using const_iterator = dirprod::iterator<decltype(std::declval<Ranges>().begin())...>;
 
     range(Ranges&&... ranges):
         ranges_(std::forward<Ranges>(ranges)...),
@@ -46,6 +46,6 @@ auto make_range(std::initializer_list<Ts>&&... lsts)
     return range<std::initializer_list<Ts>...>(std::forward<std::initializer_list<Ts>>(lsts)...);
 }
 
-} // namespace direct_product
+} // namespace dirprod
 
-#endif // __DIRECT_PRODUCT_RANGE_HPP__
+#endif // __DIRPROD_RANGE_HPP__

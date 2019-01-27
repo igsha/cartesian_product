@@ -1,12 +1,13 @@
-#ifndef __DIRECT_PRODUCT_ITERATOR_HPP__
-#define __DIRECT_PRODUCT_ITERATOR_HPP__
+#ifndef __DIRPROD_ITERATOR_HPP__
+#define __DIRPROD_ITERATOR_HPP__
 
 #include <iterator>
 #include <tuple>
 
 #include <boost/iterator/iterator_facade.hpp>
 
-namespace direct_product {
+namespace dirprod
+{
 
 template<class... Iterators>
 class iterator:
@@ -95,6 +96,6 @@ iterator<decltype(std::declval<Ranges>().begin())...> make_iterator_from_range(R
     return iterator<decltype(std::declval<Ranges>().begin())...>({rngs.begin(), rngs.end()}...);
 }
 
-} // namespace direct_product
+} // namespace dirprod
 
-#endif // __DIRECT_PRODUCT_ITERATOR_HPP__
+#endif // __DIRPROD_ITERATOR_HPP__
