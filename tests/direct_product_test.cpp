@@ -1,28 +1,26 @@
-#define CATCH_CONFIG_MAIN
-
 #include <array>
 #include <deque>
 #include <iterator>
+#include <tuple>
 #include <vector>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 #include <boost/iterator/transform_iterator.hpp>
 #include <boost/range/irange.hpp>
-#include <direct_product/range.hpp>
 
-using namespace std;
+#include <direct_product/range.hpp>
 
 TEST_CASE("iterator types")
 {
-    vector<int> i0{{7, 9, 24}};
-    deque<char> i1{{'a', 'b', 'c'}};
+    std::vector<int> i0{{7, 9, 24}};
+    std::deque<char> i1{{'a', 'b', 'c'}};
     auto i2 = boost::irange(7, 50);
 
     auto r = direct_product::make_range(i0, i1, i2);
     using iterator_t = decltype(r.begin());
 
-    static_assert(is_same_v<typename iterator_traits<iterator_t>::value_type, tuple<int, char, int>>);
-    static_assert(is_same_v<typename iterator_traits<iterator_t>::reference, tuple<int&, char&, int>>);
+    static_assert(std::is_same_v<typename std::iterator_traits<iterator_t>::value_type, std::tuple<int, char, int>>);
+    static_assert(std::is_same_v<typename std::iterator_traits<iterator_t>::reference, std::tuple<int&, char&, int>>);
 
     REQUIRE(r.begin() != r.end());
 }
@@ -32,9 +30,9 @@ TEST_CASE("different types")
     enum Components { Y, Cb, Cr, COMPONENTS_SIZE };
     enum Modes { DC, PLANAR, HORIZONTAL, VERTICAL, ANGLE45, MODES_SIZE };
 
-    vector<Components> components{{Y, Cb, Cr}};
-    deque<bool> booleans{false, true};
-    array<Modes, MODES_SIZE> modes{{DC, PLANAR, HORIZONTAL, VERTICAL, ANGLE45}};
+    std::vector<Components> components{{Y, Cb, Cr}};
+    std::deque<bool> booleans{false, true};
+    std::array<Modes, MODES_SIZE> modes{{DC, PLANAR, HORIZONTAL, VERTICAL, ANGLE45}};
 
     auto range = direct_product::make_range(components, booleans, modes);
 
@@ -63,11 +61,11 @@ TEST_CASE("different types")
 
     SECTION("for loop")
     {
-        for (const auto& t : range)
+        for (const auto& [component, boolean, mode] : range)
         {
-            auto [component, boolean, mode] = t;
-            REQUIRE(component < COMPONENTS_SIZE);
-            REQUIRE(mode < MODES_SIZE);
+            (void)boolean; // suppress warning
+            CHECK(component < COMPONENTS_SIZE);
+            CHECK(mode < MODES_SIZE);
         }
     }
 }
@@ -84,12 +82,12 @@ TEST_CASE("ranges")
 
     REQUIRE(it != last);
 
-    REQUIRE(*it++ == make_tuple(0, 0, 0));
-    REQUIRE(*it++ == make_tuple(1, 0, 0));
-    REQUIRE(*it++ == make_tuple(0, 0, 1));
-    REQUIRE(*it++ == make_tuple(1, 0, 1));
-    REQUIRE(*it++ == make_tuple(0, 0, 2));
-    REQUIRE(*it++ == make_tuple(1, 0, 2));
+    REQUIRE(*it++ == std::make_tuple(0, 0, 0));
+    REQUIRE(*it++ == std::make_tuple(1, 0, 0));
+    REQUIRE(*it++ == std::make_tuple(0, 0, 1));
+    REQUIRE(*it++ == std::make_tuple(1, 0, 1));
+    REQUIRE(*it++ == std::make_tuple(0, 0, 2));
+    REQUIRE(*it++ == std::make_tuple(1, 0, 2));
 
     REQUIRE(it == last);
 }
@@ -119,11 +117,11 @@ TEST_CASE("with iterators")
 
 TEST_CASE("const iterator")
 {
-    const vector<int> x{{7, 15, 24, 33, 17}};
+    const std::vector<int> x{{7, 15, 24, 33, 17}};
 
     auto it = direct_product::make_range(x);
 
-    auto ref = boost::make_transform_iterator(x.begin(), [](auto x)
+    auto ref = boost::make_transform_iterator(x.begin(), [](const auto x)
     {
         return std::make_tuple(x);
     });

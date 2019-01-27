@@ -1,9 +1,10 @@
-find_path(CATCH_DIR catch.hpp PATH_SUFFIXES catch)
+find_package(Catch2 REQUIRED)
+include(Catch)
 
-add_executable(direct_product_test direct_product_test.cpp)
-target_include_directories(direct_product_test PRIVATE ${CATCH_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(direct_product_test direct_product)
+add_executable(direct_product_test main.cpp direct_product_test.cpp)
+target_include_directories(direct_product_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(direct_product_test direct_product Catch2::Catch2)
 
-add_test(NAME direct_product_test COMMAND direct_product_test)
+catch_discover_tests(direct_product_test)
 
 install(CODE "execute_process(COMMAND ${CMAKE_MAKE_PROGRAM} test)")

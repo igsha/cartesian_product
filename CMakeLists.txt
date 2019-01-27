@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.9)
-project(direct_product VERSION 0.2.1 LANGUAGES CXX DESCRIPTION "Implementation of direct product iterator and range")
+cmake_minimum_required(VERSION 3.12)
+project(direct_product VERSION 0.2.2 LANGUAGES CXX DESCRIPTION "Implementation of direct product iterator and range")
 
 include(CTest)
 include(GNUInstallDirs)
@@ -22,7 +22,6 @@ install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 export(TARGETS direct_product FILE ${PROJECT_NAME}-targets.cmake)
 
 install(EXPORT ${PROJECT_NAME}-targets DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/${PROJECT_NAME}-${PROJECT_VERSION})
-export(PACKAGE ${PROJECT_NAME})
 
 configure_file(config.cmake.in ${PROJECT_NAME}-config.cmake COPYONLY)
 install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-config.cmake DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/${PROJECT_NAME}-${PROJECT_VERSION})
