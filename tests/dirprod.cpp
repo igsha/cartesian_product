@@ -16,7 +16,7 @@ TEST_CASE("iterator types")
     std::deque<char> i1{{'a', 'b', 'c'}};
     auto i2 = boost::irange(7, 50);
 
-    auto r = dirprod::make_range(i0, i1, i2);
+    auto r = dirprod::range(i0, i1, i2);
     using iterator_t = decltype(r.begin());
 
     static_assert(std::is_same_v<typename std::iterator_traits<iterator_t>::value_type, std::tuple<int, char, int>>);
@@ -34,7 +34,7 @@ TEST_CASE("different types")
     std::deque<bool> booleans{false, true};
     std::array<Modes, MODES_SIZE> modes{{DC, PLANAR, HORIZONTAL, VERTICAL, ANGLE45}};
 
-    auto range = dirprod::make_range(components, booleans, modes);
+    auto range = dirprod::range(components, booleans, modes);
 
     SECTION("iterators")
     {
@@ -48,7 +48,7 @@ TEST_CASE("different types")
                 for (int compid = Y; compid < COMPONENTS_SIZE; ++compid, ++it)
                 {
                     REQUIRE(it != last);
-                    const auto& [tcompid, tboolean, tmode] = *it;
+                    auto [tcompid, tboolean, tmode] = *it;
                     CHECK(tcompid == compid);
                     CHECK(tboolean == boolean);
                     CHECK(tmode == mode);
@@ -76,20 +76,20 @@ TEST_CASE("ranges")
     auto range1 = boost::irange(0, 1);
     auto range2 = boost::irange(0, 3);
 
-    auto range = dirprod::make_range(range0, range1, range2);
+    auto range = dirprod::range(range0, range1, range2);
     auto it = range.begin();
     auto last = range.end();
 
     REQUIRE(it != last);
 
-    REQUIRE(*it++ == std::make_tuple(0, 0, 0));
-    REQUIRE(*it++ == std::make_tuple(1, 0, 0));
-    REQUIRE(*it++ == std::make_tuple(0, 0, 1));
-    REQUIRE(*it++ == std::make_tuple(1, 0, 1));
-    REQUIRE(*it++ == std::make_tuple(0, 0, 2));
-    REQUIRE(*it++ == std::make_tuple(1, 0, 2));
+    CHECK(*it++ == std::make_tuple(0, 0, 0));
+    CHECK(*it++ == std::make_tuple(1, 0, 0));
+    CHECK(*it++ == std::make_tuple(0, 0, 1));
+    CHECK(*it++ == std::make_tuple(1, 0, 1));
+    CHECK(*it++ == std::make_tuple(0, 0, 2));
+    CHECK(*it++ == std::make_tuple(1, 0, 2));
 
-    REQUIRE(it == last);
+    CHECK(it == last);
 }
 
 TEST_CASE("with iterators")
@@ -97,7 +97,7 @@ TEST_CASE("with iterators")
     auto range0 = boost::irange(0, 10);
     auto range1 = boost::irange(7, 19);
 
-    auto range = dirprod::make_range(range0, range1);
+    auto range = dirprod::range(range0, range1);
     auto it = range.begin();
     auto last = range.end();
 
@@ -115,23 +115,37 @@ TEST_CASE("with iterators")
     }
 }
 
-TEST_CASE("const iterator")
+TEST_CASE("one element")
 {
-    const std::vector<int> x{{7, 15, 24, 33, 17}};
-
-    auto it = dirprod::make_range(x);
-
-    auto ref = boost::make_transform_iterator(x.begin(), [](const auto x)
+    SECTION("by reference")
     {
-        return std::make_tuple(x);
-    });
+        std::vector x{4, 5, 6, 9, 47};
+        auto rng = dirprod::range{x};
+        auto it = rng.begin();
 
-    REQUIRE(std::equal(it.begin(), it.end(), ref));
+        CHECK(*it++ == 4);
+        CHECK(*it++ == 5);
+        CHECK(*it++ == 6);
+        CHECK(*it++ == 9);
+        CHECK(*it++ == 47);
+        CHECK(it == rng.end());
+    }
+
+    SECTION("by prvalue")
+    {
+        auto rng = dirprod::range{std::vector{1, 2, 8}};
+        auto it = rng.begin();
+
+        CHECK(*it++ == 1);
+        CHECK(*it++ == 2);
+        CHECK(*it++ == 8);
+        CHECK(it == rng.end());
+    }
 }
 
 TEST_CASE("move ranges")
 {
-    auto rng = dirprod::make_range(boost::irange(0, 11), std::vector<double>({7, 55.2, 3.17, -8.5}));
+    auto rng = dirprod::range(boost::irange(0, 11), std::vector<double>({7, 55.2, 3.17, -8.5}));
     auto it = rng.begin();
 
     for (int i = 0; i < 11; ++i) //!< \todo std::advance(it2, std::make_tuple(0, 1))
