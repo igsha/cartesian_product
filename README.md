@@ -1,7 +1,10 @@
 # dirprod
 
 Implements cartesian product (direct product) to reduce for-loops in programs
+
 ```cxx
+#include <dirprod/range.hpp>
+
 enum Modes { DC, PLANAR, HORIZONTAL, VERTICAL, ANGLE45, MODES_SIZE };
 enum Components { Y, Cb, Cr, COMPONENTS_SIZE };
 
@@ -25,9 +28,9 @@ auto modes = boost::counting_range(int(DC), int(MODES_SIZE)) | boost::adaptors::
 });
 std::list<bool> boolean{{false, true}};
 
-auto enumeration = dirprod::make_range(std::vector<Components>{{Y, Cb, Cr}}, boolean, modes);
+auto enumeration = dirprod::range(std::vector{Y, Cb, Cr}, boolean, modes);
 // iterate through all possible combinations
-for (const auto& choice : enumeration)
+for (const auto& [comp, b, mode] : enumeration)
 {
     // process choice
 }
