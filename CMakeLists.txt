@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-project(dirprod VERSION 0.3.0 LANGUAGES CXX DESCRIPTION "Implementation of direct product iterator")
+project(dirprod VERSION 1.0.0 LANGUAGES CXX DESCRIPTION "Implementation of direct product iterator")
 
 include(CMakePackageConfigHelpers)
 include(CTest)
@@ -16,7 +16,6 @@ target_link_libraries(dirprod INTERFACE Boost::boost)
 
 install(TARGETS dirprod EXPORT ${PROJECT_NAME}-targets)
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-export(TARGETS dirprod FILE ${PROJECT_NAME}-targets.cmake)
 
 install(EXPORT ${PROJECT_NAME}-targets DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/${PROJECT_NAME}-${PROJECT_VERSION})
 

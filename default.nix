@@ -1,17 +1,17 @@
-{ pkgs ? import <nixpkgs> {} }:
+{ stdenv, writeText, cmake, boost, gcc, catch2 }:
 
 let
-  cmakeVersionRegex = ".*project\\(.*VERSION[[:space:]]+([[:digit:]\.]+).*";
+  cmakeVersionRegex = ".*project\\(.*VERSION[[:space:]]+([[:digit:]\\.]+).*";
   version = builtins.head (builtins.match cmakeVersionRegex (builtins.readFile ./CMakeLists.txt));
 
-in pkgs.stdenv.mkDerivation rec {
+in stdenv.mkDerivation rec {
   name = "${pname}-${version}";
   pname = "dirprod";
   inherit version;
 
   src = ./.;
 
-  setupHook = pkgs.writeText "setupHook.sh" ''
+  setupHook = writeText "setupHook.sh" ''
     set${pname}Dir() {
       if [[ -r "$1/share/cmake/${pname}/${pname}-config.cmake" ]]; then
         export ${pname}_DIR="$1"
@@ -21,13 +21,13 @@ in pkgs.stdenv.mkDerivation rec {
     addEnvHooks "$targetOffset" set${pname}Dir
   '';
 
-  nativeBuildInputs = with pkgs; [ cmake setupHook boost gcc ];
-  buildInputs = with pkgs; [ catch2 ];
+  nativeBuildInputs = [ cmake setupHook boost gcc ];
+  buildInputs = [ catch2 ];
   doCheck = true;
 
-  meta = with pkgs.stdenv.lib; {
+  meta = with stdenv.lib; {
     description = "A header-only C++ library to provide direct product of containers and ranges";
-    homepage = https://github.com/igsha/direc_product;
+    homepage = https://github.com/igsha/dirprod;
     license = licenses.mit;
     platforms = platforms.all;
     maintainers = with maintainers; [ igsha ];

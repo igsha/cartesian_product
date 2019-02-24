@@ -1,5 +1,6 @@
 #include <array>
 #include <deque>
+#include <iostream>
 #include <iterator>
 #include <tuple>
 #include <vector>
@@ -9,6 +10,19 @@
 #include <boost/range/irange.hpp>
 
 #include <dirprod/range.hpp>
+
+namespace std
+{
+    template<class... Ts>
+    std::ostream& operator<<(std::ostream& os, const std::tuple<Ts...>& t)
+    {
+        return std::apply([&os](const auto& x0, const auto&... xs) -> decltype(auto) {
+            os << "(" << x0;
+            (..., (os << "," << xs));
+            return os << ")";
+        }, t);
+    }
+}
 
 TEST_CASE("iterator types")
 {
@@ -153,4 +167,15 @@ TEST_CASE("move ranges")
 
     REQUIRE(it != rng.end());
     CHECK(*it == std::make_tuple(0, 55.2));
+}
+
+TEST_CASE("direct random access")
+{
+    auto rng = dirprod::range(boost::irange(0, 11), boost::irange(7, 55), boost::irange(13, 40));
+    auto it = rng.begin();
+
+    CHECK(*(it + (3 + 11 * 8 + 11 * (55 - 7) * 1)) == std::make_tuple(3, 15, 14));
+    CHECK(*it == std::make_tuple(0, 7, 13));
+    CHECK(*(it + ((40 - 13) * (55 - 7) * (11 - 0) - 1)) == std::make_tuple(10, 54, 39));
+    CHECK(*(it + ((40 - 13) * (55 - 7) * (11 - 0))) == std::make_tuple(0, 7, 40));
 }
