@@ -179,3 +179,15 @@ TEST_CASE("direct random access")
     CHECK(*(it + ((40 - 13) * (55 - 7) * (11 - 0) - 1)) == std::make_tuple(10, 54, 39));
     CHECK(*(it + ((40 - 13) * (55 - 7) * (11 - 0))) == std::make_tuple(0, 7, 40));
 }
+
+TEST_CASE("const range")
+{
+    std::vector<int> r0{{1, 2, 3}};
+    const std::vector<int> r1{{4, 5, 6}};
+
+    auto rng = dirprod::range(r0, r1);
+    auto it = rng.begin();
+
+    REQUIRE(it != rng.end());
+    CHECK(*(it + 2 + 3 * 1) == std::make_tuple(3, 5));
+}

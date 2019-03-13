@@ -11,7 +11,7 @@ namespace dirprod::detail
 {
 
 template<class Range>
-using range_to_iterator_t = typename std::decay_t<Range>::iterator;
+using range_to_iterator_t = decltype(std::declval<Range>().begin());
 
 template<class Range>
 using range_to_value_t = typename std::iterator_traits<range_to_iterator_t<Range>>::value_type;
