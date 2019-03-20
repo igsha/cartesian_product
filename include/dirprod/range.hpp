@@ -6,12 +6,15 @@
 #include <tuple>
 
 #include <boost/iterator/iterator_facade.hpp>
+#include <boost/range/begin.hpp>
+#include <boost/range/end.hpp>
+#include <boost/range/size.hpp>
 
 namespace dirprod::detail
 {
 
 template<class Range>
-using range_to_iterator_t = decltype(std::declval<Range>().begin());
+using range_to_iterator_t = decltype(boost::begin(std::declval<Range>())); // iterator or const_iterator
 
 template<class Range>
 using range_to_value_t = typename std::iterator_traits<range_to_iterator_t<Range>>::value_type;
@@ -117,9 +120,9 @@ public:
 
     range(Ranges&&... ranges):
         ranges_(std::forward<Ranges>(ranges)...),
-        first_(std::apply([](auto&... rngs) { return iterator_type(rngs.begin()...); }, ranges_)),
-        last_(std::apply([](auto&... rngs) { return iterator_type(rngs.end()...); }, ranges_)),
-        dists_(std::apply([](auto&... rng) { return decltype(dists_){static_cast<typename iterator::difference_type>(rng.size())...}; }, ranges_))
+        first_(std::apply([](auto&... rngs) { return iterator_type(std::begin(rngs)...); }, ranges_)),
+        last_(std::apply([](auto&... rngs) { return iterator_type(std::end(rngs)...); }, ranges_)),
+        dists_(std::apply([](auto&... rng) { return decltype(dists_){static_cast<typename iterator::difference_type>(boost::size(rng))...}; }, ranges_))
     {}
 
     auto begin()
@@ -156,12 +159,12 @@ public:
 
     auto begin()
     {
-        return range_.begin();
+        return boost::begin(range_);
     }
 
     auto end()
     {
-        return range_.end();
+        return boost::end(range_);
     }
 
 private:

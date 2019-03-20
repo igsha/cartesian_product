@@ -8,6 +8,7 @@
 #include <catch2/catch.hpp>
 #include <boost/iterator/transform_iterator.hpp>
 #include <boost/range/irange.hpp>
+#include <boost/range/adaptor/filtered.hpp>
 
 #include <dirprod/range.hpp>
 
@@ -190,4 +191,15 @@ TEST_CASE("const range")
 
     REQUIRE(it != rng.end());
     CHECK(*(it + 2 + 3 * 1) == std::make_tuple(3, 5));
+}
+
+TEST_CASE("c-array")
+{
+    int a[] = {7, 5, 6, 33, 76, 12};
+    auto even = [](auto x) { return x % 2 == 0; };
+    auto rng = dirprod::range(a, a | boost::adaptors::filtered(std::cref(even)));
+    auto it = std::begin(rng);
+
+    REQUIRE(it != std::end(rng));
+    CHECK(*it == std::make_tuple(7, 6));
 }

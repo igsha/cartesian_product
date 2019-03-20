@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-project(dirprod VERSION 1.0.1 LANGUAGES CXX DESCRIPTION "Implementation of direct product iterator")
+project(dirprod VERSION 1.0.2 LANGUAGES CXX DESCRIPTION "Implementation of direct product iterator")
 
 include(CMakePackageConfigHelpers)
 include(CTest)
