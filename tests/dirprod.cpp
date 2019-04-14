@@ -9,6 +9,7 @@
 #include <boost/iterator/transform_iterator.hpp>
 #include <boost/range/irange.hpp>
 #include <boost/range/adaptor/filtered.hpp>
+#include <boost/range/adaptor/transformed.hpp>
 
 #include <dirprod/range.hpp>
 
@@ -202,4 +203,22 @@ TEST_CASE("c-array")
 
     REQUIRE(it != std::end(rng));
     CHECK(*it == std::make_tuple(7, 6));
+}
+
+TEST_CASE("boost::filtered")
+{
+    int a[] = {5, 8, 68, 21, 7, 89, 44};
+    auto is_even = [](auto x) { const auto [a, b] = x; return a % 2 == 0 && b % 2 == 0; };
+    auto rng = dirprod::range(a, boost::irange(0, 7)) | boost::adaptors::filtered(std::cref(is_even));
+    auto it = rng.begin();
+
+    REQUIRE(std::distance(it, rng.end()) == 12);
+
+    CHECK(*it++ == std::make_tuple(8, 0));
+    CHECK(*it++ == std::make_tuple(68, 0));
+    CHECK(*it++ == std::make_tuple(44, 0));
+    CHECK(*it++ == std::make_tuple(8, 2));
+    CHECK(*it++ == std::make_tuple(68, 2));
+    CHECK(*it++ == std::make_tuple(44, 2));
+    CHECK(*it == std::make_tuple(8, 4));
 }

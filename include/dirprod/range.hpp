@@ -2,27 +2,12 @@
 #define __DIRPROD_RANGE_HPP__
 
 #include <array>
-#include <iterator>
-#include <tuple>
 
-#include <boost/iterator/iterator_facade.hpp>
 #include <boost/range/begin.hpp>
 #include <boost/range/end.hpp>
 #include <boost/range/size.hpp>
 
-namespace dirprod::detail
-{
-
-template<class Range>
-using range_to_iterator_t = decltype(boost::begin(std::declval<Range>())); // iterator or const_iterator
-
-template<class Range>
-using range_to_value_t = typename std::iterator_traits<range_to_iterator_t<Range>>::value_type;
-
-template<class Range>
-using range_to_reference_t = typename std::iterator_traits<range_to_iterator_t<Range>>::reference;
-
-} // namespace dirprod::detail
+#include "iterator.hpp"
 
 namespace dirprod
 {
@@ -30,98 +15,20 @@ namespace dirprod
 template<class... Ranges>
 class range
 {
-
 public:
-    class iterator:
-        public boost::iterator_facade<
-            iterator,
-            std::tuple<detail::range_to_value_t<Ranges>...>,
-            std::random_access_iterator_tag,
-            std::tuple< detail::range_to_reference_t<Ranges>...>
-        >
-    {
-    public:
-        using iterator_type = std::tuple<detail::range_to_iterator_t<Ranges>...>;
+    friend class range_iterator<Ranges...>;
 
-        iterator(range& rng): parent_(&rng), iterators_(parent_->first_)
-        {}
-
-    private:
-        friend class boost::iterator_core_access;
-        friend class range;
-
-        auto dereference() const
-        {
-            return std::apply([](auto&&... xs) { return typename iterator::reference(*xs...); }, iterators_);
-        }
-
-        void increment()
-        {
-            increment<0>();
-        }
-
-        bool equal(const iterator& x) const
-        {
-            return iterators_ == x.iterators_;
-        }
-
-        void advance(typename iterator::difference_type n)
-        {
-            increment<0>(n);
-        }
-
-        template<std::size_t Index>
-        void increment()
-        {
-            if constexpr(Index < N - 1)
-            {
-                auto& it = std::get<Index>(iterators_);
-                ++it;
-
-                if (it != std::get<Index>(parent_->last_))
-                    return;
-
-                std::get<Index>(iterators_) = std::get<Index>(parent_->first_);
-                increment<Index + 1>();
-            }
-            else
-            {
-                ++std::get<Index>(iterators_);
-            }
-        }
-
-        template<std::size_t Index>
-        void increment(typename iterator::difference_type n)
-        {
-            if constexpr(Index < N - 1)
-            {
-                auto& it = std::get<Index>(iterators_);
-                const auto& first = std::get<Index>(parent_->first_);
-                n += std::distance(first, it);
-                it = first + n % parent_->dists_[Index];
-                n /= parent_->dists_[Index];
-
-                if (n != 0)
-                    increment<Index + 1>(n);
-            }
-            else
-            {
-                std::get<Index>(iterators_) += n;
-            }
-        }
-
-
-    private:
-        range* parent_;
-        iterator_type iterators_;
-    };
-
+    using iterator = range_iterator<Ranges...>;
+    using const_iterator = iterator;
     using iterator_type = typename iterator::iterator_type;
+    using value_type = typename iterator::value_type;
+    using size_type = size_t;
+    using difference_type = typename iterator::difference_type;
 
     range(Ranges&&... ranges):
         ranges_(std::forward<Ranges>(ranges)...),
-        first_(std::apply([](auto&... rngs) { return iterator_type(std::begin(rngs)...); }, ranges_)),
-        last_(std::apply([](auto&... rngs) { return iterator_type(std::end(rngs)...); }, ranges_)),
+        first_(std::apply([](auto&... rngs) { return iterator_type(boost::begin(rngs)...); }, ranges_)),
+        last_(std::apply([](auto&... rngs) { return iterator_type(boost::end(rngs)...); }, ranges_)),
         dists_(std::apply([](auto&... rng) { return decltype(dists_){static_cast<typename iterator::difference_type>(boost::size(rng))...}; }, ranges_))
     {}
 
@@ -131,6 +38,18 @@ public:
     }
 
     auto end()
+    {
+        auto it = begin();
+        std::get<N - 1>(it.iterators_) = std::get<N - 1>(last_);
+        return it;
+    }
+
+    auto begin() const
+    {
+        return const_iterator(*this);
+    }
+
+    auto end() const
     {
         auto it = begin();
         std::get<N - 1>(it.iterators_) = std::get<N - 1>(last_);
