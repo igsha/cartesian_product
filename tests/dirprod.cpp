@@ -209,7 +209,8 @@ TEST_CASE("boost::filtered")
 {
     int a[] = {5, 8, 68, 21, 7, 89, 44};
     auto is_even = [](auto x) { const auto [a, b] = x; return a % 2 == 0 && b % 2 == 0; };
-    auto rng = dirprod::range(a, boost::irange(0, 7)) | boost::adaptors::filtered(std::cref(is_even));
+    auto original_rng = dirprod::range(a, boost::irange(0, 7));
+    auto rng = original_rng | boost::adaptors::filtered(std::cref(is_even));
     auto it = rng.begin();
 
     REQUIRE(std::distance(it, rng.end()) == 12);

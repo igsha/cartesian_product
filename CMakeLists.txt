@@ -6,7 +6,7 @@ include(CTest)
 include(GNUInstallDirs)
 
 set(CMAKE_CXX_STANDARD 17)
-add_compile_options(-Wall -pedantic -Wextra)
+add_compile_options(-Wall -pedantic -Wextra -Werror)
 
 find_package(Boost REQUIRED)
 

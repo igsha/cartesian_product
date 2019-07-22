@@ -66,6 +66,11 @@ private:
         increment<0>(n);
     }
 
+    typename range_iterator::difference_type distance_to(const range_iterator& /*x*/) const
+    {
+        return 0;
+    }
+
     template<std::size_t Index>
     void increment()
     {
